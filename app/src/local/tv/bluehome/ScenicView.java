@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.view.View;
 import java.io.IOException;
+import java.io.FilterInputStream;
 import java.io.InputStream;
 
 /** A static, replaceable photographic backdrop and once-prepared frosted material. */
@@ -41,6 +42,60 @@ final class ScenicView extends View {
     void onResume(){} // No continuous wallpaper decoding or drawing while idle.
     void onPause(){}
 
+    /** A fixed bundled JPEG only. This is not a file, URL or Intent import API. */
+    static Prepared prepareBuiltin(Context context) throws IOException {
+        return prepareAsset(context,"builtin/hidden-lake-cc0.jpg",true);
+    }
+    static Prepared prepareDefault(Context context) throws IOException {
+        try {return prepareAsset(context,"default-background.png",false);}
+        catch(IOException unavailable){
+            Bitmap solid=Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888);
+            solid.eraseColor(0xff07111e);
+            try {return prepare(solid);}finally {solid.recycle();}
+        }
+    }
+    /** Bounds and sampled decode are checked before the fixed 1920x1080 preparation. */
+    private static Prepared prepareAsset(Context context,String asset,boolean jpegOnly) throws IOException {
+        BitmapFactory.Options bounds=new BitmapFactory.Options();bounds.inJustDecodeBounds=true;
+        InputStream input=new BoundedAssetStream(context.getAssets().open(asset));
+        try {BitmapFactory.decodeStream(input,null,bounds);}finally {input.close();}
+        if(bounds.outWidth<1||bounds.outHeight<1||bounds.outWidth>8192||bounds.outHeight>8192
+                ||(long)bounds.outWidth*bounds.outHeight>32000000L
+                ||(jpegOnly&&!"image/jpeg".equals(bounds.outMimeType)))
+            throw new IOException("Unsupported bundled image");
+        int sample=1;
+        while((bounds.outWidth+sample-1)/sample>2048||(bounds.outHeight+sample-1)/sample>2048
+                ||(long)((bounds.outWidth+sample-1)/sample)*((bounds.outHeight+sample-1)/sample)>3000000L)
+            sample*=2;
+        BitmapFactory.Options options=new BitmapFactory.Options();options.inScaled=false;
+        options.inSampleSize=sample;options.inPreferredConfig=Bitmap.Config.ARGB_8888;
+        input=new BoundedAssetStream(context.getAssets().open(asset));Bitmap source;
+        try {source=BitmapFactory.decodeStream(input,null,options);}finally {input.close();}
+        if(source==null)throw new IOException("Bundled image failed decoding");
+        try {
+            if(source.getWidth()>2048||source.getHeight()>2048||(long)source.getWidth()*source.getHeight()>3000000L)
+                throw new IOException("Decoded image exceeds memory budget");
+            return prepare(source);
+        }finally {source.recycle();}
+    }
+    private static final class BoundedAssetStream extends FilterInputStream {
+        private int remaining=16*1024*1024;
+        BoundedAssetStream(InputStream input){super(input);}
+        @Override public int read() throws IOException {
+            if(remaining==0){if(super.read()!=-1)throw new IOException("Bundled image too large");return -1;}
+            int value=super.read();if(value!=-1)remaining--;return value;
+        }
+        @Override public int read(byte[] bytes,int offset,int length) throws IOException {
+            if(length==0)return 0;
+            if(remaining==0){if(super.read()!=-1)throw new IOException("Bundled image too large");return -1;}
+            int count=in.read(bytes,offset,Math.min(length,remaining));if(count>0)remaining-=count;return count;
+        }
+        @Override public long skip(long count) throws IOException {
+            long skipped=in.skip(Math.min(count,(long)remaining));remaining-=(int)skipped;return skipped;
+        }
+        @Override public boolean markSupported(){return false;}
+    }
+
     static final class Prepared {
         final Bitmap photograph, blurred;
         Prepared(Bitmap photograph, Bitmap blurred){this.photograph=photograph;this.blurred=blurred;}
@@ -60,10 +115,14 @@ final class ScenicView extends View {
     }
     /** UI thread only. Old display-list bitmaps are released by GC, not recycled in-use. */
     void applyPrepared(Prepared prepared){
+        // Allocate before changing the displayed state. A failed shader/Matrix allocation
+        // leaves the old bitmaps owned by this view and lets the caller discard this pair.
+        BitmapShader material=new BitmapShader(prepared.blurred,Shader.TileMode.CLAMP,Shader.TileMode.CLAMP);
+        Matrix matrix=new Matrix();matrix.setScale(W/prepared.blurred.getWidth(),H/prepared.blurred.getHeight());
+        material.setLocalMatrix(matrix);
+        invalidate(); // UI-thread invalidation schedules drawing after the following commit.
+        glassPaint.setShader(material);
         photograph=prepared.photograph;blurred=prepared.blurred;
-        BitmapShader material=new BitmapShader(blurred,Shader.TileMode.CLAMP,Shader.TileMode.CLAMP);
-        Matrix matrix=new Matrix();matrix.setScale(W/blurred.getWidth(),H/blurred.getHeight());
-        material.setLocalMatrix(matrix);glassPaint.setShader(material);invalidate();
     }
 
     @Override protected void onDraw(Canvas canvas){

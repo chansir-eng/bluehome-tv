@@ -35,6 +35,7 @@ import org.json.JSONObject;
 final class WallpaperController {
     static final String PREFS="wallhaven-background-v1";
     static final String ACTION_BOOT_READY="local.tv.bluehome.WALLPAPER_BOOT_READY";
+    static final String BUILTIN_SELECTED="builtin_hidden_lake_selected";
     private static final long SUCCESS_BACKOFF_MS=30000L, FAILURE_BACKOFF_MS=300000L;
     private static final int MAX_JSON_BYTES=524288,MAX_THUMB_BYTES=614400,MAX_DOWNLOAD_BYTES=12582912;
     interface Listener {void onWallpaper(ScenicView.Prepared prepared);}
@@ -49,7 +50,9 @@ final class WallpaperController {
     private Listener listener;
     private volatile boolean closed;
     private boolean active,queued,needsPass,registered;
-    private String loadedId="";
+    private volatile String loadedId="";
+    // Read once per serialized worker pass; stale results cannot replace a newer choice.
+    private long refreshRevision;
     private OfflineGallery offlineGallery;
     private final Random offlineRandom=new Random();
     private long retryDelay=-1;
@@ -112,6 +115,15 @@ final class WallpaperController {
     }
     private void refresh() throws Exception {
         if(closed)return;
+        refreshRevision=prefs.getLong("configuration_revision",0L);
+        if(prefs.getBoolean(BUILTIN_SELECTED,false)){
+            if(!"builtin:hidden-lake".equals(loadedId))
+                publish("builtin:hidden-lake",ScenicView.prepareBuiltin(context));
+            return;
+        }
+        // Selection never alters the old online/offline preferences. Restore their base
+        // backdrop first, then let their existing rotation/cache policy run normally.
+        if(loadedId.startsWith("builtin:"))publish("default",ScenicView.prepareDefault(context));
         // The default path never reads a network credential and never opens a connection.
         if(prefs.getBoolean("use_preloaded",true)){refreshPreloaded();return;}
         if(!directory.isDirectory()&&!directory.mkdirs())return;
@@ -241,9 +253,14 @@ final class WallpaperController {
         return prepared;
     }
     private void publish(final String id,final ScenicView.Prepared prepared){
-        loadedId=id;
+        final long expectedRevision=refreshRevision;
         main.post(new Runnable(){@Override public void run(){
-            if(closed||listener==null){prepared.discard();return;}listener.onWallpaper(prepared);
+            if(closed||listener==null||expectedRevision!=prefs.getLong("configuration_revision",0L)){
+                prepared.discard();return;
+            }
+            try {listener.onWallpaper(prepared);loadedId=id;}
+            catch(OutOfMemoryError insufficient){prepared.discard();}
+            catch(RuntimeException invalid){prepared.discard();}
         }});
     }
     private Candidate choose(String key,String query,String current,String next) throws Exception {
@@ -267,10 +284,12 @@ final class WallpaperController {
         }
         Candidate best=null;double bestScore=.52;int evaluated=0;long thumbnailDeadline=SystemClock.elapsedRealtime()+25000L;
         for(Candidate candidate:candidates){
+            requireNetworkCurrent();
             if(closed||SystemClock.elapsedRealtime()>thumbnailDeadline)break;
             Bitmap thumb=null,small=null;
             try {
                 byte[] bytes=readBytes(candidate.thumb,null,MAX_THUMB_BYTES);
+                requireNetworkCurrent();
                 BitmapFactory.Options bounds=new BitmapFactory.Options();bounds.inJustDecodeBounds=true;
                 BitmapFactory.decodeByteArray(bytes,0,bytes.length,bounds);
                 if(bounds.outWidth<8||bounds.outHeight<8||bounds.outWidth>2048||bounds.outHeight>2048)continue;
@@ -284,9 +303,11 @@ final class WallpaperController {
             finally {if(small!=null&&small!=thumb)small.recycle();if(thumb!=null)thumb.recycle();}
         }
         if(evaluated==0&&!candidates.isEmpty())throw new IOException("No thumbnail decoded");
+        requireNetworkCurrent();
         return best;
     }
     private void cacheFullImage(Candidate candidate) throws Exception {
+        requireNetworkCurrent();
         File raw=File.createTempFile("wallhaven-",".tmp",context.getCacheDir());
         try {
             HttpsURLConnection request=open(candidate.image,null);
@@ -295,12 +316,14 @@ final class WallpaperController {
                 try {FileOutputStream output=new FileOutputStream(raw);try {copyBounded(input,output,MAX_DOWNLOAD_BYTES);}finally {output.close();}}
                 finally {input.close();}
             }finally {request.disconnect();}
+            requireNetworkCurrent();
             Bitmap bitmap=decode(raw);if(bitmap==null)throw new IOException("Invalid downloaded image");
             ScenicView.Prepared prepared;
             try {prepared=ScenicView.prepare(bitmap);}finally {bitmap.recycle();}
             try {
+                requireNetworkCurrent();
                 AtomicFile target=new AtomicFile(file(candidate.id));FileOutputStream output=null;
-                try {output=target.startWrite();if(!prepared.photograph.compress(Bitmap.CompressFormat.JPEG,88,output))throw new IOException("Image encoding failed");target.finishWrite(output);output=null;}
+                try {output=target.startWrite();if(!prepared.photograph.compress(Bitmap.CompressFormat.JPEG,88,output))throw new IOException("Image encoding failed");requireNetworkCurrent();target.finishWrite(output);output=null;}
                 finally {if(output!=null)target.failWrite(output);}
                 if(file(candidate.id).length()>4194304L){file(candidate.id).delete();throw new IOException("Prepared image too large");}
                 Bitmap verified=decode(file(candidate.id));
@@ -329,9 +352,9 @@ final class WallpaperController {
         finally {request.disconnect();}
     }
     private HttpsURLConnection open(URL url,String key) throws Exception {
+        requireNetworkCurrent();
         boolean api=WallpaperPolicy.safeApi(url);
         if(!(api||WallpaperPolicy.safeImage(url))||(!api&&key!=null))throw new IOException("Unexpected endpoint");
-        if(closed||Thread.currentThread().isInterrupted())throw new IOException("Stopped");
         HttpsURLConnection request=(HttpsURLConnection)url.openConnection();
         try {
             boolean thumb="th.wallhaven.cc".equalsIgnoreCase(url.getHost());
@@ -340,17 +363,26 @@ final class WallpaperController {
             request.setRequestProperty("Accept",api?"application/json":"image/jpeg,image/png,image/webp");
             request.setRequestProperty("Accept-Encoding","identity");
             if(api&&key!=null&&WallpaperPolicy.validKey(key))request.setRequestProperty("X-API-Key",key);
-            WallpaperTls.configure(context,request);int code=request.getResponseCode();if(code!=200)throw new HttpFailure(code,api);
+            WallpaperTls.configure(context,request);requireNetworkCurrent();
+            int code=request.getResponseCode();requireNetworkCurrent();if(code!=200)throw new HttpFailure(code,api);
             return request;
         }catch(Exception failure){request.disconnect();throw failure;}
     }
     private void copyBounded(InputStream input,java.io.OutputStream output,int limit) throws IOException {
         byte[] buffer=new byte[16384];int total=0,n;long deadline=SystemClock.elapsedRealtime()+45000L;
-        while((n=input.read(buffer))!=-1){
-            if(closed||Thread.currentThread().isInterrupted()||SystemClock.elapsedRealtime()>deadline)throw new IOException("Stopped or timed out");
+        while(true){
+            requireNetworkCurrent();
+            if(SystemClock.elapsedRealtime()>deadline)throw new IOException("Stopped or timed out");
+            n=input.read(buffer);requireNetworkCurrent();if(n==-1)break;
             total+=n;if(total>limit)throw new IOException("Response too large");output.write(buffer,0,n);
         }
         if(total==0)throw new IOException("Empty response");
+    }
+    /** Called only by the serialized online worker, before new I/O and between reads. */
+    private void requireNetworkCurrent() throws IOException {
+        if(closed||Thread.currentThread().isInterrupted()
+                ||refreshRevision!=prefs.getLong("configuration_revision",0L)
+                ||prefs.getBoolean(BUILTIN_SELECTED,false))throw new IOException("Wallpaper selection changed");
     }
     private String bootToken(){
         try {FileInputStream input=new FileInputStream("/proc/sys/kernel/random/boot_id");

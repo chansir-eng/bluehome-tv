@@ -9,6 +9,8 @@
 !/app/assets/
 !/app/res/
 !/app/src/
+!/docs/screenshots/
+!/app/assets/builtin/
 !/app/res/drawable/
 !/app/res/values/
 !/app/src/local/
@@ -20,9 +22,11 @@
 !/NOTICE.md
 !/README.md
 !/app/AndroidManifest.xml
+!/app/assets/builtin/hidden-lake-cc0.jpg
 !/app/assets/offline-gallery.json
 !/app/res/drawable/icon.xml
 !/app/res/values/strings.xml
+!/app/src/local/tv/bluehome/BuiltinWallpaperActivity.java
 !/app/src/local/tv/bluehome/IconMapping.java
 !/app/src/local/tv/bluehome/IconRegistry.java
 !/app/src/local/tv/bluehome/MainActivity.java
@@ -37,12 +41,16 @@
 !/app/src/local/tv/bluehome/WallpaperTls.java
 !/app/src/local/tv/bluehome/WaveView.java
 !/app/src/local/tv/bluehome/WeatherView.java
+!/assets/bluehome-app-icon.svg
 !/assets/bluehome-cover.svg
 !/assets/bluehome-mark.svg
 !/config-examples/weather-location.example.json
 !/docs/ASSETS.zh-CN.md
 !/docs/BUILD.zh-CN.md
 !/docs/PRIVACY.zh-CN.md
+!/docs/ROADMAP.zh-CN.md
+!/docs/SECURITY.zh-CN.md
 !/docs/SOURCE-MATRIX.zh-CN.md
+!/docs/screenshots/bluehome-3.3.2-hidden-lake.png
 !/third_party/cleanyourtv-LICENSE.txt
 !/tools/build_unsigned.py

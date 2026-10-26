@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="local.tv.bluehome" android:versionCode="11" android:versionName="3.3.1">
+    package="local.tv.bluehome" android:versionCode="12" android:versionName="3.3.2">
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="22" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,6 +13,8 @@
         <receiver android:name=".WallpaperBootReceiver" android:exported="false">
             <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>
         </receiver>
+        <activity android:name=".BuiltinWallpaperActivity" android:exported="false"
+            android:screenOrientation="landscape" android:excludeFromRecents="true" />
         <activity android:name=".MainActivity" android:label="蓝境桌面"
             android:exported="true" android:launchMode="singleTask" android:screenOrientation="landscape"
             android:excludeFromRecents="true" android:clearTaskOnLaunch="true"

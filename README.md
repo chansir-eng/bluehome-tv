@@ -1,65 +1,70 @@
-<p align="center"><img src="assets/bluehome-mark.svg" width="96" height="96" alt="蓝境 Bluehome 原创标识提案"></p>
+<p align="center"><img src="assets/bluehome-app-icon.svg" width="96" height="96" alt="蓝境 Bluehome"></p>
 <h1 align="center">蓝境 · Bluehome</h1>
 <p align="center">让旧电视，回到简单。</p>
-<p align="center"><a href="#电视上的简单入口">特色</a> · <a href="docs/BUILD.zh-CN.md">构建</a> · <a href="docs/SOURCE-MATRIX.zh-CN.md">来源矩阵</a> · <a href="NOTICE.md">许可与署名</a></p>
+<p align="center"><a href="#我们做了什么">特色</a> · <a href="#当前进度">进度</a> · <a href="docs/BUILD.zh-CN.md">构建</a> · <a href="docs/SECURITY.zh-CN.md">安全边界</a></p>
 
-![蓝境原创品牌封面，非实机截图](assets/bluehome-cover.svg)
+面向遥控器的 Android TV 桌面：把常用应用、信号源与投屏入口放在容易找到的位置，让电视回到日常使用本身。
 
-蓝境是一款面向遥控器的 Android TV 桌面。当前目录提供 **14 个 Java 源文件、Manifest、最小原创资源和仅生成 unsigned APK 的构建脚本**。源码与第三方壁纸可以分开整理；这里不包含旧壁纸、字体、PNG 图标、位置配置、凭据、旧 Git 历史或签名安装包。
+蓝境应用图标：[Android XML 源](app/res/drawable/icon.xml) · [可复用 SVG](assets/bluehome-app-icon.svg)。首页展示的是本轮已安装版使用的实际应用图标。
 
-> 我们有权授权的蓝境新增/改写代码采用 [MIT](LICENSE)，署名 Bluehome contributors；具体范围见 [许可说明](LICENSE-SCOPE.md)。已保留 CleanYourTV 上游候选的完整 MIT 声明，不宣称全部代码原创或确定 fork 关系，也不用代码许可覆盖未知素材。
+![蓝境 3.3.2 在 TCL Android 5.1.1 电视上显示 Hidden Lake 背景的真实桌面](docs/screenshots/bluehome-3.3.2-hidden-lake.png)
 
-## 电视上的简单入口
+2026-10-26 UTC · 3.3.2/code12 · TCL Android 5.1.1 实机。私人设备构建保留原有 UI 资源；公开源码回退系统字体与通用图标。此图展示桌面，不是视频 App 去广告效果证据。
 
-### 01 · 遥控优先
+截图已审查：未见账号、二维码、位置标签或设备／网络标识；公开 PNG 为原像素复制，元数据检查通过。
 
-有方向、确定、返回、菜单和设置键处理，应用库合并电视应用与普通 Launcher 入口。
+当前源码版本为 **3.3.2 / versionCode 12**。已完成公开源码 unsigned 构建、一次电视覆盖安装／版本回读，以及正常菜单中的“选择 Hidden Lake → 恢复原背景模式 → 再次选择”实机验证。
 
-### 02 · 保留常用系统入口
+## 我们做了什么
 
-信号源、投屏、设置与原厂桌面有对应入口；部分实现针对 TCL，不承诺所有品牌通用。
+- **遥控优先。** 方向、确定、返回、菜单与设置有对应处理；应用库汇集电视与普通 Launcher 入口。
+- **保留电视入口。** 信号源、投屏、设置与原厂桌面有对应入口，部分实现针对 TCL。
+- **启动优化按应用限定。** 对指定 TCL 奇异果入口传参，保留其他应用原有启动逻辑，不修改官方应用包。
+- **背景选择有明确范围。** 3.3.2 加入经过清理的内置 Hidden Lake CC0 照片及恢复先前模式功能，不提供通用图片、URL 或文件导入。
+- **素材与代码分开。** 公开源码默认深蓝程序背景、系统字体与通用图标；旧壁纸、字体、PNG 图标和私人配置不随源码迁入。
 
-### 03 · 按应用限定启动优化
+## 当前进度
 
-3.3.1/code11 的策略只对指定 TCL 奇异果入口追加一个布尔启动参数。既有主机测试记录为 57 项断言通过；安装完成记录不能替代电视效果实测。芒果仍是独立任务，不列为已解决功能。
+| 事项 | 状态 | 验证范围 |
+| --- | --- | --- |
+| 源码与文档 | 已整理，构建通过 | 3.3.2 公开源码完成 unsigned 构建、资源清单及主机检查，详见构建文档 |
+| 3.3.2 电视更新 | 一次覆盖安装完成 | 版本回读为 3.3.2/code12；未清数据、改变网络或修改官方应用，功能回归另行验证 |
+| 爱奇艺／银河奇异果启动预览参数 | 指定版本对照有效，策略已集成 | TCL 版 **16.8.0.220465** 的一次双冷启动参数对照；3.3.1/code11 完成策略集成覆盖安装与版本回读 |
+| 蓝境入口集成回归 | 尚未完成全量回归 | 安装后的卡片、应用库、回退入口与完整遥控流程仍需分别检查 |
+| 芒果 TV | 网络层行为研究中 | 尚无经过精准验证的解决方案 |
+| Hidden Lake 背景 | 实机通过 | TCL Android 5.1.1 上选择→恢复原模式→再次选择通过；恢复的是模式，不保证精确上一张，长期性能与故障回退另验 |
+| 真实桌面截图 | 已采集并审查 | 1920 × 1080，3.3.2/code12；画面与元数据检查通过，私人设备构建差异见图注 |
 
-### 04 · 素材可替换，代码可单独构建
+奇异果结果只覆盖上述指定版本和一次参数对照，不保证其他版本、热启动、其他入口或片内广告。芒果研究继续独立进行；这里不宣称全 App 去广告、视频广告移除、会员或 DRM 解锁。
 
-本候选默认使用系统字体、代码绘制的通用图标和深蓝程序背景。原摄影背景与三方图标不随源码迁入；缺少位置配置时天气不请求网络，首次时间也可能显示占位，详见下表。
+## 背景、默认效果与恢复
 
-## 当前候选与既有安装版的差异
+公开源码将 `app/assets/builtin/hidden-lake-cc0.jpg` 作为可选内置照片，**默认仍为深蓝程序背景**。照片原尺寸为 6016 × 4000，电视使用时按界面裁切。本轮已在真实电视上完成选择并看到背景显示；这不代表长期性能、所有文字状态或不同设备均已验收。
 
-| 项目 | 本源码候选 |
+“恢复先前背景模式”恢复选择新图之前的背景来源／模式，不保证精确回到上一张照片。旧图库或在线轮换重新运行时，实际图片可能不同。公开源码不含旧图片，恢复到缺少资源的模式时只能沿用可用背景或回退程序背景。详见 [资源与行为差异](docs/ASSETS.zh-CN.md)。
+
+私人设备的覆盖安装包可能保留原有本地资源；该设备画面不能直接视为公开源码默认构建效果。截图说明会分别交代版本、背景和本地配置。
+
+## 安装与兼容性
+
+源码提供 [unsigned 构建入口](docs/BUILD.zh-CN.md)，没有随仓库提供签名发行安装包。Unsigned APK 不能直接覆盖电视现有应用；设备覆盖安装还取决于签名连续性和实际系统环境。
+
+| 项目 | 当前范围 |
 | --- | --- |
-| 壁纸 | 空图库、程序背景，无旧照片 |
-| 图标 | 缺少旧 PNG，各应用使用通用图形 |
-| 字体 | 系统字体，中文字形由电视系统决定 |
-| 天气/时间 | 无真实位置配置、天气种子或旧偏好；天气不可用，时间可信证据为空时可能占位 |
-| 在线壁纸 | 新安装默认离线；源码保留可选客户端，仅接受官方 API 主机，移除未核实的备用服务 |
-| 可选背景文件 | 引用名为 `default-background.png`，本候选未打包该图 |
-| 隐藏/未启用代码 | `WaveView` 当前未被主界面启用；壁纸设置 Activity 未在现有 Manifest 注册 |
-| 构建产物 | unsigned APK，仅供本地核验，不是可直接覆盖安装的发行包 |
+| API 配置 | minSdk21、targetSdk22，不要求触屏；最低 API 不是所有 Android 5+ 电视均已验证的声明 |
+| 既有设备记录 | 蓝境 3.3.1/code11 覆盖安装与版本回读完成 |
+| 当前版本 | 3.3.2/code12；构建、一次覆盖安装／版本回读，以及 Hidden Lake 选择→恢复原模式→再次选择完成 |
+| 厂商入口与遥控 | 当前含 TCL 适配；HDMI、投屏、不同遥控器和非 TCL 系统需要分别回归 |
+| 天气与时间 | 公开源码没有真实位置或天气种子；天气默认不可用，缺少可信时间证据时可能显示占位 |
 
-Manifest 仍为 `local.tv.bluehome`，3.3.1/code11，minSdk21、targetSdk22。这些配置不等于全面兼容所有 Android 5+ 电视。
+## 开发与路线图
 
-## 源码与开发
+[构建与依赖](docs/BUILD.zh-CN.md) · [资源与行为差异](docs/ASSETS.zh-CN.md) · [逐文件来源](docs/SOURCE-MATRIX.zh-CN.md) · [隐私配置](docs/PRIVACY.zh-CN.md) · [安全边界](docs/SECURITY.zh-CN.md) · [路线图](docs/ROADMAP.zh-CN.md)
 
-```text
-app/
-├── AndroidManifest.xml
-├── src/local/tv/bluehome/   # 14 Java
-├── res/                   # 原创新图标与应用名
-└── assets/                # 原创空图库
-tools/build_unsigned.py    # 现有本地 SDK/JDK；无下载/签名/安装
-config-examples/           # dummy 位置示例，不进入 APK
-third_party/               # 保留上游候选 MIT 文本
-docs/
-```
+## 贡献与许可
 
-- [构建与依赖](docs/BUILD.zh-CN.md)
-- [逐文件来源与处理](docs/SOURCE-MATRIX.zh-CN.md)
-- [隐私检查范围与配置](docs/PRIVACY.zh-CN.md)
-- [资源与行为差异](docs/ASSETS.zh-CN.md)
-- [许可范围](LICENSE-SCOPE.md)
+我们有权授权的蓝境新增／改写代码采用 [MIT](LICENSE)，署名 Bluehome contributors，范围见 [许可说明](LICENSE-SCOPE.md)。保留 [Gathin 的 CleanYourTV MIT 声明](third_party/cleanyourtv-LICENSE.txt)，不据此声称完整派生关系，也不将第三方版权重新归为蓝境。
 
-本次界面展示素材为原创设计提案，非实机截图。没有新采集电视画面，也未将旧图片截图纳入仓库。README 仅使用 GitHub Markdown 与简单图片 HTML 属性，不依赖任意 CSS 或脚本。
+Hidden Lake 独立采用 CC0：[Joalde 原作页面](https://commons.wikimedia.org/wiki/File:Hidden_Lake_from_far_above_08-2024.jpg) · [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)。作者、来源、处理方式与校验值见 [素材记录](docs/ASSETS.zh-CN.md#hidden-lake-cc0)。代码 MIT 不覆盖图片许可。
+
+首页组织参考电视桌面项目的实机展示、使用场景、恢复与验证范围，文字、标识和展示素材自行制作。README 使用 GitHub Markdown 与简单图片属性，不依赖自定义 CSS 或脚本。

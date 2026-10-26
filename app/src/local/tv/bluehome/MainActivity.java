@@ -2,10 +2,12 @@ package local.tv.bluehome;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -98,7 +100,7 @@ public class MainActivity extends Activity {
         layers.addView(weather, new FrameLayout.LayoutParams(-1, -1));
         setContentView(layers);
         wallpapers=new WallpaperController(this,new WallpaperController.Listener(){
-            @Override public void onWallpaper(ScenicView.Prepared prepared){scene.applyPrepared(prepared);home.invalidate();}
+            @Override public void onWallpaper(ScenicView.Prepared prepared){home.invalidate();scene.applyPrepared(prepared);}
         });
         IntentFilter packages = new IntentFilter();
         packages.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -200,6 +202,17 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setComponent(new ComponentName("com.tcl.settings", "com.tcl.settings.MainActivity"));
         if (!openIntent(intent) && !openIntent(new Intent(Settings.ACTION_SETTINGS))) message("请使用遥控器的设置键打开电视设置。");
+    }
+
+    /** Only a local click opens this chooser; incoming HOME intents carry no actions. */
+    private void openHomeOptions() {
+        new AlertDialog.Builder(this).setTitle("桌面设置")
+                .setItems(new String[]{"内置壁纸", "电视设置"}, new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialog, int position) {
+                        if (position == 0) startActivity(new Intent(MainActivity.this, BuiltinWallpaperActivity.class));
+                        else if (position == 1) openSettings();
+                    }
+                }).show();
     }
 
     private void openStock() {
@@ -434,7 +447,7 @@ public class MainActivity extends Activity {
         void back(){if(library){library=false;area=CONTENT;updateAccessibility();invalidate();return;}if(area!=CONTENT){area=CONTENT;updateAccessibility();invalidate();return;}if(selected!=0){selected=0;move();}}
         private void updateAccessibility(){String label=library?(apps.isEmpty()?"应用库，暂无应用":title(apps.get(gridChoice))):area==TOP?(topChoice==0?"游戏分类":"设置"):shelf.isEmpty()?"蓝境桌面":title(shelf.get(selected));if(area==LAUNCH&&!library)label+="，启动";setContentDescription(label+"。左右选择，确定打开，上下切换，返回收起。");}
         private void openLibrary(){if(appsDirty)loadApps();library=true;area=CONTENT;if(!shelf.isEmpty())for(int i=0;i<apps.size();i++)if(apps.get(i).packageName.equals(shelf.get(selected).packageName))gridChoice=i;updateAccessibility();invalidate();}
-        private void activate(){if(library){if(!apps.isEmpty())launch(apps.get(gridChoice));return;}if(area==TOP){if(topChoice==1)openSettings();else{area=CONTENT;updateAccessibility();invalidate();}return;}heroHandler.removeCallbacks(heroChange);showHero(false);if(!shelf.isEmpty())launch(shelf.get(selected));}
+        private void activate(){if(library){if(!apps.isEmpty())launch(apps.get(gridChoice));return;}if(area==TOP){if(topChoice==1)openHomeOptions();else{area=CONTENT;updateAccessibility();invalidate();}return;}heroHandler.removeCallbacks(heroChange);showHero(false);if(!shelf.isEmpty())launch(shelf.get(selected));}
         private void launch(AppEntry app){
             if(app.kind==1){openSource();return;}if(app.kind==2){openLibrary();return;}if(app.kind==3){openCast();return;}if(app.kind==4){openSettings();return;}if(app.kind==5){openStock();return;}
             if(app.activityName!=null){Intent intent=new Intent(Intent.ACTION_MAIN);intent.addCategory(Intent.CATEGORY_LAUNCHER);intent.setComponent(new ComponentName(app.packageName,app.activityName));if(openIntent(intent))return;}

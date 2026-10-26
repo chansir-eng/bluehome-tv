@@ -1,15 +1,15 @@
 # 许可范围
 
-我们有权授权的蓝境新增/改写代码采用 [MIT License](LICENSE)，署名 Bluehome contributors。第三方权利及声明继续适用于其覆盖的内容，不因本项目的许可选择而改变。
+我们有权授权的新增／改写工作采用 [MIT License](LICENSE)，署名 Bluehome contributors。既有第三方版权及其许可继续适用，不因本项目整理而改变。
 
-| 内容 | 当前处理 |
+| 内容 | 适用范围 |
 | --- | --- |
-| CleanYourTV 适用代码或实质性部分 | 上游 MIT 许可与 Gathin 版权声明完整保留；具体逐文件对应尚未确认 |
-| 我们有权授权的蓝境新增/改写代码与本次原创资源、工具、文档 | MIT，Copyright (c) 2026 Bluehome contributors |
-| Open-Meteo 数据署名 | 保留已有 CC BY 4.0 说明；候选没有打包天气数据 |
-| 旧字体、PNG 图标、壁纸、位置配置、缓存、签名资料 | 未纳入候选 |
-| 后续 CC0 或其他可分发图片 | 单列来源和许可，不混入应用代码许可 |
+| 实际复用的 CleanYourTV 代码 | 保留 MIT 与 Gathin 完整声明；具体逐文件对应关系尚未确认 |
+| 本次有权授权的新增／改写代码、原创资源、工具和文档 | MIT，Copyright (c) 2026 Bluehome contributors |
+| Hidden Lake 山湖照片 | Joalde，CC0 1.0，独立来源和处理记录见素材文档 |
+| Open-Meteo 天气数据 | 保留原有 CC BY 4.0 说明；仓库不打包天气数据 |
+| 旧字体、PNG 图标、其他壁纸、私人配置、缓存、签名材料 | 未纳入公开仓库 |
 
-许可选择不证明全部源码从零原创。如以后发现明确上游复用，应补齐对应来源记录并继续保留原许可，不将第三方版权改为 Bluehome contributors。
+本仓库不证明全量源码均为原创。以后确认具体复用时，应补充来源记录并保留原权利人的署名和许可，不能把其版权归为 Bluehome contributors。
 
-Wallhaven 壁纸、旧字体、PNG 图标和其他未知素材未纳入此源码候选；独立 CC0 图片仍按自己的来源与许可记录，不适用代码 MIT。
+图片、字体和数据许可与代码许可分别记录。MIT 不能覆盖授权不明素材；CC0 照片的来源、作者和校验值见 [素材记录](docs/ASSETS.zh-CN.md#hidden-lake-cc0)。
