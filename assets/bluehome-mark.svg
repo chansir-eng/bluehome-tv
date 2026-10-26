@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-labelledby="title desc">
+  <title id="title">蓝境 Bluehome 标识提案</title>
+  <desc id="desc">深蓝圆角底，浅蓝电视轮廓与两道柔和地平线。原创品牌图形。</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#102D50"/>
+      <stop offset="1" stop-color="#071A31"/>
+    </linearGradient>
+    <linearGradient id="horizon" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#93BFFF"/>
+      <stop offset="1" stop-color="#4C8DFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="44" fill="url(#background)"/>
+  <rect x="34" y="44" width="124" height="91" rx="18" fill="none" stroke="#DDEAFF" stroke-width="5"/>
+  <path d="M50 107C70 88 90 91 108 97S132 105 143 94" fill="none" stroke="url(#horizon)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M50 119C73 109 98 109 141 116" fill="none" stroke="#4C8DFF" stroke-width="4" stroke-linecap="round" opacity=".65"/>
+  <path d="M79 151H113" fill="none" stroke="#DDEAFF" stroke-width="5" stroke-linecap="round"/>
+</svg>

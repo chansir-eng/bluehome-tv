@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="local.tv.bluehome" android:versionCode="11" android:versionName="3.3.1">
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="22" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <application android:label="@string/app_name" android:icon="@drawable/icon" android:allowBackup="false"
+        android:hardwareAccelerated="true" android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <meta-data android:name="com.tcl.app.type" android:value="com.tcl.ui" />
+        <receiver android:name=".WallpaperBootReceiver" android:exported="false">
+            <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>
+        </receiver>
+        <activity android:name=".MainActivity" android:label="蓝境桌面"
+            android:exported="true" android:launchMode="singleTask" android:screenOrientation="landscape"
+            android:excludeFromRecents="true" android:clearTaskOnLaunch="true"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

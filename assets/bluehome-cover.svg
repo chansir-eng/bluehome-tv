@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">蓝境：让旧电视，回到简单。</title>
+  <desc id="desc">深蓝底色、蓝色弧形地平线，配合遥控优先、入口清晰的品牌定位。原创品牌设计提案，非实机截图。</desc>
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#0D2745"/>
+      <stop offset=".6" stop-color="#071A31"/>
+      <stop offset="1" stop-color="#102D50"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2=".6">
+      <stop stop-color="#93BFFF"/>
+      <stop offset=".5" stop-color="#4C8DFF"/>
+      <stop offset="1" stop-color="#254D83"/>
+    </linearGradient>
+    <clipPath id="crop"><rect width="1600" height="900" rx="32"/></clipPath>
+  </defs>
+  <g clip-path="url(#crop)">
+    <rect width="1600" height="900" fill="url(#base)"/>
+    <g fill="none" stroke="url(#blue)" stroke-linecap="round">
+      <path d="M1010 840C1040 612 1168 474 1392 426S1680 300 1770 112" stroke-width="106" opacity=".12"/>
+      <path d="M1094 882C1129 667 1250 539 1442 500S1712 380 1780 220" stroke-width="44" opacity=".24"/>
+      <path d="M1183 920C1224 720 1342 615 1502 582S1733 486 1792 354" stroke-width="17" opacity=".65"/>
+      <path d="M1279 956C1330 774 1437 694 1575 670S1764 599 1812 497" stroke-width="5" opacity=".75"/>
+    </g>
+    <path d="M96 117H136" stroke="#4C8DFF" stroke-width="5" stroke-linecap="round"/>
+    <text x="158" y="126" fill="#B6CDF0" font-family="Segoe UI,Arial,sans-serif" font-size="26" letter-spacing="6">BLUEHOME / TV LAUNCHER</text>
+    <g font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif" font-weight="600" font-size="112" letter-spacing="3">
+      <text x="92" y="354" fill="#F4F8FF">让旧电视，</text>
+      <text x="92" y="496" fill="#93BFFF">回到简单。</text>
+    </g>
+    <text x="100" y="596" fill="#C3D4EC" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="29" letter-spacing="3">遥控优先 · 入口清晰 · 保留常用系统入口</text>
+    <line x1="100" y1="714" x2="840" y2="714" stroke="#7296C7" stroke-opacity=".25"/>
+    <text x="100" y="775" fill="#F4F8FF" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="30" letter-spacing="4">蓝境</text>
+    <text x="206" y="774" fill="#9BB5D9" font-family="Segoe UI,Arial,sans-serif" font-size="22" letter-spacing="4">BLUEHOME</text>
+    <text x="100" y="834" fill="#8DA7CA" font-family="Microsoft YaHei,PingFang SC,Noto Sans CJK SC,sans-serif" font-size="20" letter-spacing="1">原创品牌设计提案 · 非实机截图</text>
+  </g>
+</svg>
