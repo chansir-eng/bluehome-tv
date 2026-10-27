@@ -2,7 +2,7 @@
 
 [返回首页](../README.md)
 
-来源矩阵以原有 14 个 Java 的本地蓝境工程为基线，3.3.2/code12 新增 `BuiltinWallpaperActivity.java`，本轮共 15 Java。已沿本地早期版本和 CleanYourTV 当前可读单文件做对照，未确认实质相同实现片段；这不是“全项目原创”证明。本轮入口、内置资源和模式恢复改动另行记录，不能将所有文件描述为完全未改动。
+来源矩阵以原有 14 个 Java 的本地蓝境工程为基线，3.3.2/code12 新增 `BuiltinWallpaperActivity.java`，3.3.3/code13 又新增 `VerifiedLaunchPolicy.java`，当前共 16 Java。已沿本地早期版本和 CleanYourTV 当前可读单文件做对照，未确认实质相同实现片段；这不是「全项目原创」证明。新入口、内置资源和模式恢复改动分别记录，不将所有文件描述为未修改。
 
 本地早期版本 3.3/code10 与 3.3.1/code11 基线包名一致，说明本地版本流转。候选上游为 [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv)，其 MIT 声明已保留。上游当前包名、SDK、Gradle/AndroidX 与界面结构不同；可读比较范围有限，未完成全部历史比对。
 
@@ -15,6 +15,7 @@
 | IconMapping.java | 公共应用包名与图标名称映射 | 未确认上游实现复用；公共包名不等于厂商源码 | 纳入，与图标资产分开 |
 | IconRegistry.java | PNG 缓存、通用图标回退 | Lucide/Feather 义务取决于实际图标文件 | 纳入代码，不带旧 PNG |
 | QiyiguoLaunchPolicy.java | 严格限定的启动参数策略 | 未确认上游对应实现 | 纳入；指定 TCL 版本一次双冷启动参数对照有效，安装后全入口回归未完成 |
+| VerifiedLaunchPolicy.java | 芒果／酷喵指定版本的固定公开 Intent 与快速重复按键限制 | 3.3.3 本地新增，未复用第三方代码 | 仅本地测试；蓝境内实机启动与播放待验证，应用库保留普通启动 |
 | OfflineGallery.java | 清单校验、路径限制、采样解码 | 读取图片的代码不取得图片分发权 | 纳入，配原创空图库 |
 | OfflineRotationPolicy.java | 轮换周期与持久 shuffle bag | 未确认上游对应实现 | 纳入本地实现 |
 | ScenicView.java | 照片采样、模糊和程序背景 | 没有包含图片像素 | 纳入；公开源码默认程序背景，选图与解码需分别验证 |
@@ -25,7 +26,7 @@
 | WallpaperTls.java | 逐连接 TLS1.2 和证书验证 | 内存 KeyStore 是信任配置，不是用户签名密钥 | 纳入代码，不迁入旧证书资产 |
 | WaveView.java | OpenGL ES2 程序背景 | Original 注释仅作为线索，非版权证明 | 纳入；当前主界面未启用 |
 | WeatherView.java | 天气覆盖、缓存、刷新、说明 | 已有 Open-Meteo / CC BY4.0 数据署名 | 保留代码和署名，不带位置/种子/缓存 |
-| AndroidManifest.xml | 应用、权限和入口声明 | 未发现第三方代码片段声明 | 3.3.2/code12，保留旧 API 配置；新增背景入口 nonexported 的契约检查通过 |
+| AndroidManifest.xml | 应用、权限和入口声明 | 未发现第三方代码片段声明 | 3.3.3/code13；保持 API 与权限集合不变，背景入口仍 nonexported |
 | res/values/strings.xml | 应用名 | 本次重新生成的名称资源 | 纳入原创资源 |
 | res/drawable/icon.xml | 当前已安装版的实际 Android 应用图标 | 本次原创电视／地平线图形，Bluehome contributors MIT | 原路径与颜色保留；对应可复用 SVG 同源导出 |
 | assets/bluehome-app-icon.svg | 蓝境应用图标的可复用矢量副本 | 由上述 XML 精确导出，原创 MIT；512 画布、48 viewBox | 首页使用的实际应用图标，不是另行设计的替代标识 |

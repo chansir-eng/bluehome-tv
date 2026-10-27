@@ -4,6 +4,7 @@
 !/assets/
 !/config-examples/
 !/docs/
+!/tests/
 !/third_party/
 !/tools/
 !/app/assets/
@@ -34,6 +35,7 @@
 !/app/src/local/tv/bluehome/OfflineRotationPolicy.java
 !/app/src/local/tv/bluehome/QiyiguoLaunchPolicy.java
 !/app/src/local/tv/bluehome/ScenicView.java
+!/app/src/local/tv/bluehome/VerifiedLaunchPolicy.java
 !/app/src/local/tv/bluehome/WallpaperBootReceiver.java
 !/app/src/local/tv/bluehome/WallpaperController.java
 !/app/src/local/tv/bluehome/WallpaperPolicy.java
@@ -47,10 +49,13 @@
 !/config-examples/weather-location.example.json
 !/docs/ASSETS.zh-CN.md
 !/docs/BUILD.zh-CN.md
+!/docs/CHANGELOG.zh-CN.md
+!/docs/LAUNCH-ENTRIES.zh-CN.md
 !/docs/PRIVACY.zh-CN.md
 !/docs/ROADMAP.zh-CN.md
 !/docs/SECURITY.zh-CN.md
 !/docs/SOURCE-MATRIX.zh-CN.md
 !/docs/screenshots/bluehome-3.3.2-hidden-lake.png
+!/tests/test_verified_launch.py
 !/third_party/cleanyourtv-LICENSE.txt
 !/tools/build_unsigned.py

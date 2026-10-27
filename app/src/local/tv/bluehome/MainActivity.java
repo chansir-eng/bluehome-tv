@@ -167,17 +167,36 @@ public class MainActivity extends Activity {
 
     private boolean openPackage(String packageName) {
         PackageManager pm = getPackageManager();
-        Intent intent = pm.getLaunchIntentForPackage(packageName);
+        Intent intent;
+        try { intent = pm.getLaunchIntentForPackage(packageName); }
+        catch (RuntimeException unavailable) { return false; }
         if (intent != null && openIntent(intent)) return true;
         Intent query = new Intent(Intent.ACTION_MAIN);
         query.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         query.setPackage(packageName);
-        for (ResolveInfo match : pm.queryIntentActivities(query, 0)) {
+        List<ResolveInfo> matches;
+        try { matches = pm.queryIntentActivities(query, 0); }
+        catch (RuntimeException unavailable) { return false; }
+        if (matches == null) return false;
+        for (ResolveInfo match : matches) {
             Intent explicit = new Intent(Intent.ACTION_MAIN);
             explicit.setComponent(new ComponentName(match.activityInfo.packageName, match.activityInfo.name));
             if (openIntent(explicit)) return true;
         }
         return false;
+    }
+
+    /** Exactly one ordinary Intent follows a rejected fixed entry. */
+    private boolean openOrdinaryPackage(String packageName, String activityName) {
+        Intent ordinary;
+        try { ordinary = getPackageManager().getLaunchIntentForPackage(packageName); }
+        catch (RuntimeException unavailable) { ordinary = null; }
+        if (ordinary == null && activityName != null) {
+            ordinary = new Intent(Intent.ACTION_MAIN);
+            ordinary.addCategory(Intent.CATEGORY_LAUNCHER);
+            ordinary.setComponent(new ComponentName(packageName, activityName));
+        }
+        return ordinary != null && openIntent(ordinary);
     }
 
     private void openSource() {
@@ -265,6 +284,7 @@ public class MainActivity extends Activity {
         private int area=CONTENT,selected=0,topChoice=0,gridChoice=0,heroIndex=0;
         private float heroProgress=1,viewportScale=1,originX,originY,touchX,touchY;
         private boolean library=false,active=false,appsLoaded=false,appsDirty=true;
+        private final VerifiedLaunchPolicy.TapGate launchGate=new VerifiedLaunchPolicy.TapGate();
 
         HomeView(){
             super(MainActivity.this);setFocusable(true);setFocusableInTouchMode(true);setSoundEffectsEnabled(true);
@@ -340,6 +360,8 @@ public class MainActivity extends Activity {
             shelf.add(builtin("游戏主机","@hdmi",1));
             shelf.add(favorite("com.xiaodianshi.tv.yst","哔哩哔哩"));
             shelf.add(favorite("com.tcl.qiyiguo","银河奇异果"));
+            shelf.add(favorite("com.hunantv.market","芒果 TV"));
+            shelf.add(favorite("com.cibn.tv","CIBN 酷喵"));
             shelf.add(favorite("com.golive.cinema","CIBN 同步院线"));
             shelf.add(favorite("com.quark.yun.tv","夸克网盘"));
             shelf.add(builtin("投屏","@cast",3));shelf.add(builtin("应用库","@library",2));
@@ -405,7 +427,7 @@ public class MainActivity extends Activity {
             p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(1/ratio);p.setColor(alpha(0xffdcedfa,.16f*a));rect.set(.5f,.5f,143.5f,143.5f);c.drawRoundRect(rect,20,20,p);p.setStyle(Paint.Style.FILL);c.restore();
             if(selectedCard){p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);p.setColor(alpha(Color.WHITE,keyboardFocus?.98f:.56f));rect.set(x-6,y-6,x+size+6,y+size+6);c.drawRoundRect(rect,26*ratio,26*ratio,p);p.setStyle(Paint.Style.FILL);}
         }
-        private String title(AppEntry app){String id=app.packageName;if(app.kind==1)return "游戏主机";if(app.kind==2)return "应用库";if(app.kind==3)return "投屏";if(id.equals("com.xiaodianshi.tv.yst"))return "哔哩哔哩";if(id.equals("com.tcl.qiyiguo"))return "银河奇异果";if(id.equals("com.golive.cinema"))return "CIBN 同步院线";if(id.equals("com.quark.yun.tv"))return "夸克网盘";return app.label;}
+        private String title(AppEntry app){String id=app.packageName;if(app.kind==1)return "游戏主机";if(app.kind==2)return "应用库";if(app.kind==3)return "投屏";if(id.equals("com.xiaodianshi.tv.yst"))return "哔哩哔哩";if(id.equals("com.tcl.qiyiguo"))return "银河奇异果";if(id.equals("com.hunantv.market"))return "芒果 TV";if(id.equals("com.cibn.tv"))return "CIBN 酷喵";if(id.equals("com.golive.cinema"))return "CIBN 同步院线";if(id.equals("com.quark.yun.tv"))return "夸克网盘";return app.label;}
         private String shortTitle(AppEntry app){if(app.packageName.equals("com.tcl.qiyiguo"))return "奇异果";if(app.packageName.equals("com.golive.cinema"))return "同步院线";return title(app);}
         private String subtitle(AppEntry app){String id=app.packageName;if(app.kind==1)return "选择 HDMI 信号源，开始游戏。";if(app.kind==2)return "已安装的应用，都在这里。";if(app.kind==3)return "让手机内容，来到大屏。";if(id.equals("com.xiaodianshi.tv.yst"))return "哔哩哔哩 (゜-゜)つロ 干杯~";if(id.equals("com.tcl.qiyiguo"))return "电影与剧集，随心选择。";if(id.equals("com.golive.cinema"))return "打开同步院线，选择想看的电影。";if(id.equals("com.quark.yun.tv"))return "打开网盘，播放你的珍藏。";return "打开应用，继续探索。";}
         private void drawHero(Canvas c){
@@ -447,11 +469,23 @@ public class MainActivity extends Activity {
         void back(){if(library){library=false;area=CONTENT;updateAccessibility();invalidate();return;}if(area!=CONTENT){area=CONTENT;updateAccessibility();invalidate();return;}if(selected!=0){selected=0;move();}}
         private void updateAccessibility(){String label=library?(apps.isEmpty()?"应用库，暂无应用":title(apps.get(gridChoice))):area==TOP?(topChoice==0?"游戏分类":"设置"):shelf.isEmpty()?"蓝境桌面":title(shelf.get(selected));if(area==LAUNCH&&!library)label+="，启动";setContentDescription(label+"。左右选择，确定打开，上下切换，返回收起。");}
         private void openLibrary(){if(appsDirty)loadApps();library=true;area=CONTENT;if(!shelf.isEmpty())for(int i=0;i<apps.size();i++)if(apps.get(i).packageName.equals(shelf.get(selected).packageName))gridChoice=i;updateAccessibility();invalidate();}
-        private void activate(){if(library){if(!apps.isEmpty())launch(apps.get(gridChoice));return;}if(area==TOP){if(topChoice==1)openHomeOptions();else{area=CONTENT;updateAccessibility();invalidate();}return;}heroHandler.removeCallbacks(heroChange);showHero(false);if(!shelf.isEmpty())launch(shelf.get(selected));}
-        private void launch(AppEntry app){
+        private void activate(){if(library){if(!apps.isEmpty())launch(apps.get(gridChoice),false);return;}if(area==TOP){if(topChoice==1)openHomeOptions();else{area=CONTENT;updateAccessibility();invalidate();}return;}heroHandler.removeCallbacks(heroChange);showHero(false);if(!shelf.isEmpty())launch(shelf.get(selected),true);}
+        private void launch(AppEntry app,boolean allowVerifiedEntry){
             if(app.kind==1){openSource();return;}if(app.kind==2){openLibrary();return;}if(app.kind==3){openCast();return;}if(app.kind==4){openSettings();return;}if(app.kind==5){openStock();return;}
+            if(!launchGate.accept(app.packageName,SystemClock.uptimeMillis()))return;
+            boolean fixedTarget=VerifiedLaunchPolicy.supports(app.packageName);
+            if(allowVerifiedEntry&&fixedTarget){
+                Intent verified=VerifiedLaunchPolicy.prepare(getPackageManager(),app.packageName);
+                if(verified!=null&&openIntent(verified))return;
+            }
+            if(fixedTarget){
+                if(openOrdinaryPackage(app.packageName,app.activityName))return;
+                message("暂时无法打开“"+title(app)+"”。可以从应用库或原厂桌面重试。");
+                return;
+            }
             if(app.activityName!=null){Intent intent=new Intent(Intent.ACTION_MAIN);intent.addCategory(Intent.CATEGORY_LAUNCHER);intent.setComponent(new ComponentName(app.packageName,app.activityName));if(openIntent(intent))return;}
-            if(!openPackage(app.packageName))message("暂时无法打开“"+title(app)+"”。可以从应用库或原厂桌面重试。");
+            if(openPackage(app.packageName))return;
+            message("暂时无法打开“"+title(app)+"”。可以从应用库或原厂桌面重试。");
         }
         private void navigate(int key){
             int oldArea=area,oldSelected=selected,oldTop=topChoice,oldGrid=gridChoice;
