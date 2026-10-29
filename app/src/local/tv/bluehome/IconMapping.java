@@ -17,6 +17,8 @@ final class IconMapping {
         if(pkg.equals("com.tcl.MultiScreenInteraction_TV"))return"cast";
         if(pkg.equals("com.tcl.settings"))return"settings";
         if(pkg.equals("com.tcl.cyberui"))return"stock";
+        if(pkg.equals("com.hunantv.market"))return"mango";
+        if(pkg.equals("com.cibn.tv"))return"coolmiao";
         if(pkg.equals("com.xiaodianshi.tv.yst"))return"bili";
         if(pkg.equals("com.tcl.qiyiguo"))return"qiyi";
         if(pkg.equals("com.golive.cinema"))return"golive";

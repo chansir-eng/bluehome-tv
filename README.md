@@ -1,4 +1,10 @@
 <p align="center"><img src="assets/bluehome-app-icon.svg" width="96" height="96" alt="蓝境 Bluehome"></p>
+
+## 3.3.4 图标更新
+
+私人电视版 3.3.4/code14 已完成同签名保数据覆盖安装，回读包版本与安装包校验一致，安装开关已恢复。遥控焦点、25 枚图标实际显示和视频入口点击尚待用户验收。
+
+公开源码仅包含 18 枚工具图标及可编辑 SVG、芒果/酷喵图标映射。7 枚品牌适配（奇异果、芒果、酷喵、小电视、同洲院线、夸克、微信）授权未明确，未提交；缺图由既有 IconRegistry 回退到通用图标。公开版和私人电视版的素材不同，不能将私人 25 枚预览当作公开构建结果。详见 [图标范围](docs/ICONS.zh-CN.md)。
 <h1 align="center">蓝境 · Bluehome</h1>
 <p align="center">让旧电视，回到简单。</p>
 <p align="center"><a href="#我们做了什么">特色</a> · <a href="#当前进度">进度</a> · <a href="docs/BUILD.zh-CN.md">构建</a> · <a href="docs/SECURITY.zh-CN.md">安全边界</a></p>

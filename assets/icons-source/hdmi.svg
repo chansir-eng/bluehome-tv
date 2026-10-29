@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384" viewBox="0 0 48 48" role="img" aria-label="HDMI蓝境图标草稿">
+  <title>HDMI · 蓝境图标草稿</title>
+  <g fill="none" stroke="#F2F8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 39 L8 32 C8 29 11 27 15 27"/>
+    <rect x="15" y="16" width="26" height="18" rx="3"/>
+    <path d="M18 16 L21 11 L35 11 L38 16"/>
+    <path d="M21 23 L21 28"/>
+    <path d="M26 23 L26 28"/>
+    <path d="M31 23 L31 28"/>
+    <path d="M36 23 L36 28"/></g>
+  <style>.dot{fill:#F2F8FF;stroke:none}</style>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384" viewBox="0 0 48 48" role="img" aria-label="投屏蓝境图标草稿">
+  <title>投屏 · 蓝境图标草稿</title>
+  <g fill="none" stroke="#F2F8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9 L39 9 C41 9 42 11 42 13 L42 32 C42 34 41 35 39 35 L33 35"/>
+    <path d="M8 27 C15 27 21 33 21 40"/>
+    <path d="M8 34 C11 34 14 36 14 40"/>
+    <circle class="dot" cx="8" cy="40" r="1.3"/></g>
+  <style>.dot{fill:#F2F8FF;stroke:none}</style>
+</svg>

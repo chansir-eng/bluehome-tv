@@ -54,6 +54,11 @@ def main():
         raise SystemExit("Reviewed metadata-clean CC0 image hash mismatch")
     (assets / "builtin").mkdir()
     shutil.copyfile(builtin, assets / "builtin/hidden-lake-cc0.jpg")
+    # Explicitly reviewed system/tool icons only; private brand adaptations excluded.
+    icon_names = ('account', 'box', 'cable', 'cast', 'clock', 'generic', 'hdmi', 'library', 'media', 'message', 'music', 'search', 'settings', 'shield', 'stock', 'store', 'upgrade', 'weather')
+    (assets / "icons-white").mkdir()
+    for name in icon_names:
+        shutil.copyfile(ROOT / "app/assets/icons-white" / (name+".png"), assets / "icons-white" / (name+".png"))
     log_path = work / "local-build.log"
     with log_path.open("w", encoding="utf-8") as log:
         def run(label, command):
@@ -79,7 +84,7 @@ def main():
                 raise SystemExit("D8 did not produce dex output")
             for dex_file in dex_files:
                 archive.write(dex_file, dex_file.name)
-        output = work / "bluehome-3.3.3-source-candidate-unsigned.apk"
+        output = work / "bluehome-3.3.4-source-candidate-unsigned.apk"
         run("zipalign", [tools["zipalign"], "-f", "4", unaligned, output])
         run("alignment-check", [tools["zipalign"], "-c", "4", output])
         run("package-check", [tools["aapt"], "dump", "badging", output])
@@ -88,7 +93,7 @@ def main():
         if any(name.upper().startswith("META-INF/") and name.upper().endswith((".RSA", ".DSA", ".EC")) for name in names):
             raise SystemExit("Unexpected signing material in unsigned output")
         bundled_assets = sorted(name for name in names if name.startswith("assets/"))
-        if bundled_assets != ["assets/builtin/hidden-lake-cc0.jpg", "assets/offline-gallery.json"]:
+        if bundled_assets != sorted(["assets/builtin/hidden-lake-cc0.jpg", "assets/offline-gallery.json"] + ["assets/icons-white/"+name+".png" for name in icon_names]):
             raise SystemExit("Unexpected bundled asset")
     info = {"created_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "unsigned": True, "installed": False, "device_tested": False, "java_source_count": 16, "min_api": 21, "target_api": 22, "bundled_assets": bundled_assets, "apk_sha256": hashlib.sha256(output.read_bytes()).hexdigest(), "apk_size_bytes": output.stat().st_size, "tool_sha256": {name: hashlib.sha256(path.read_bytes()).hexdigest() for name, path in tools.items()}}
     (work / "build-info.json").write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")

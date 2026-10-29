@@ -21,3 +21,5 @@
 旧 Noto 字体、Lucide/Feather/品牌 PNG 图标、Wallhaven 壁纸、其他摄影背景和自带 CA 未迁入。CleanYourTV 的 Outfit 字体也未随本仓库分发。日后引入任何素材，应核对实际文件来源与许可，不能套用项目代码 MIT。
 
 本次有权授权的新增／改写代码、原创 SVG 品牌图、Android vector、文档与构建工具采用 MIT，署名 Bluehome contributors，具体范围见 [LICENSE-SCOPE.md](LICENSE-SCOPE.md)。
+
+Tool-icon drafts follow the existing simple outline system. Retain the Lucide ISC and Feather MIT notices in third_party/Lucide-LICENSE.txt for any inherited forms. Third-party brand adaptations are excluded from this public source.

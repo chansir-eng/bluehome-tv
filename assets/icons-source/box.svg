@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384" viewBox="0 0 48 48" role="img" aria-label="机顶盒蓝境图标草稿">
+  <title>机顶盒 · 蓝境图标草稿</title>
+  <g fill="none" stroke="#F2F8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22 L12 13 C13 11 15 10 17 10 L31 10 C33 10 35 11 36 13 L40 22"/>
+    <rect x="8" y="22" width="32" height="16" rx="4"/>
+    <circle class="dot" cx="16" cy="30" r="1"/>
+    <circle class="dot" cx="23" cy="30" r="1"/></g>
+  <style>.dot{fill:#F2F8FF;stroke:none}</style>
+</svg>
